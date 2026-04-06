@@ -12,6 +12,16 @@ Este proyecto aplica los conceptos vistos en clase:
 - **Visualización**: Gráficos interactivos con Plotly
 - **Carga de datos**: CSV con encoding UTF-8
 
+## Estructura del código
+
+- **`app.py`**: punto de entrada Streamlit (configuración, barra lateral, carga de datos y enrutado a cada vista).
+- **`dashboard/`**: paquete con la lógica organizada por capas:
+  - `constants.py` — nombres de columnas y configuración de Plotly
+  - `data.py` — lectura del CSV con caché
+  - `transforms.py` — funciones de limpieza y filtrado reutilizables
+  - `styles.py` / `sidebar.py` — apariencia y navegación
+  - `views/` — una pantalla por archivo (`inicio`, `explorar`, `limpieza`, `analisis`, `visualizaciones`)
+
 ## Requisitos
 
 - Python 3.9 o superior
@@ -66,7 +76,7 @@ La app se abrirá en `http://localhost:8501`
 
 2. **Subir el proyecto a GitHub**
    - Crea un repositorio en GitHub
-   - Sube los archivos: `app.py`, `requirements.txt` y el archivo CSV
+   - Sube el repositorio completo: `app.py`, carpeta `dashboard/`, `requirements.txt` y el CSV
 
 3. **Desplegar**
    - Ve a [share.streamlit.io](https://share.streamlit.io/)
@@ -80,14 +90,15 @@ La app se abrirá en `http://localhost:8501`
 
 1. Crea una cuenta en [Hugging Face](https://huggingface.co/)
 2. Crea un nuevo Space (SDK: Streamlit)
-3. Sube `app.py`, `requirements.txt` y el CSV
+3. Sube `app.py`, `dashboard/`, `requirements.txt` y el CSV
 4. El Space se desplegará automáticamente
 
 ### Estructura necesaria para despliegue
 
 ```
 Proyecto-Streamlit/
-├── app.py                    # Aplicación principal
+├── app.py                    # Punto de entrada Streamlit
+├── dashboard/                # Paquete: datos, transformaciones, vistas
 ├── requirements.txt          # Dependencias
 ├── Violencia_de_Género_...csv  # Dataset
 └── README.md                 # Este archivo
@@ -99,7 +110,7 @@ Proyecto-Streamlit/
 
 | Sección | Descripción |
 |---------|-------------|
-| **Inicio** | Métricas generales del dataset |
+| **Inicio** | Propósito, objetivos, métricas y técnicas de curso |
 | **Explorar Datos** | Vista general, info, value_counts |
 | **Limpieza & Transformación** | Manejo de nulos, filtrado, sort_values, groupby |
 | **Análisis Estadístico** | Agregaciones por tipo de violencia, comuna, año |
