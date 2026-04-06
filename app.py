@@ -10,7 +10,7 @@ import streamlit as st
 import plotly.express as px
 from pathlib import Path
 
-# ============== CONFIGURACIÓN DE PÁGINA ==============
+
 st.set_page_config(
     page_title="Violencia de Género e Intrafamiliar - Bucaramanga",
     page_icon="📊",
@@ -18,14 +18,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Cargar datos solo una vez
+
 @st.cache_data
 def cargar_datos():
     """Carga el CSV con manejo de encoding para caracteres especiales."""
     base = Path(__file__).parent
     csv_files = list(base.glob("*.csv"))
     if not csv_files:
-        csv_files = list(Path(".").glob("*.csv"))  # fallback CWD
+        csv_files = list(Path(".").glob("*.csv"))  
     if not csv_files:
         st.error("No se encontró ningún archivo CSV en el directorio.")
         return None
@@ -37,7 +37,7 @@ def cargar_datos():
             continue
     return pd.read_csv(ruta, encoding="utf-8", on_bad_lines="skip", errors="ignore")
 
-# ============== ESTILOS PERSONALIZADOS ==============
+
 st.markdown("""
 <style>
     /* Tema profesional - tonos sobrios para datos sensibles */
@@ -90,7 +90,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ============== BARRA LATERAL ==============
+
 with st.sidebar:
     st.markdown(
         '<p style="text-align:center;font-size:2.75rem;line-height:1;margin:0 0 0.35rem 0;">📊</p>',
@@ -108,23 +108,23 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Datos: Alcaldía de Bucaramanga - SIVIGILA")
 
-# ============== CARGA DE DATOS ==============
+
 df_raw = cargar_datos()
 if df_raw is None:
     st.stop()
 
-# Columnas clave para el análisis (renombradas para legibilidad)
-COL_VICTIMA = "sexo_"  # Sexo de la víctima
-COL_VIOLENCIA = "def_naturaleza"  # Tipo de violencia
+
+COL_VICTIMA = "sexo_" 
+COL_VIOLENCIA = "def_naturaleza"  
 COL_EDAD = "Grupo edad"
 COL_CICLO = "Ciclo de vida"
 COL_COMUNA = "Comuna"
 COL_BARRIO = "Barrio"
 COL_MES = "MES"
 COL_ANO = "año"
-COL_PARENTEZCO = "parentezco_vict"  # Relación con agresor
+COL_PARENTEZCO = "parentezco_vict"  
 COL_SEGURIDAD = "Tipo de Seguridad Social"
-COL_AREA = "area_"  # Zona urbana / cabecera
+COL_AREA = "area_"  
 
 
 def preparar_df_visual(df_in: pd.DataFrame) -> pd.DataFrame:
@@ -160,7 +160,7 @@ PLOTLY_CONFIG = {
     "toImageButtonOptions": {"format": "png", "filename": "grafico_dashboard"},
 }
 
-# ============== PÁGINA INICIO ==============
+
 if seccion == "🏠 Inicio":
     st.title("Análisis de Violencia de Género e Intrafamiliar")
     st.subheader("Bucaramanga - Datos SIVIGILA")
@@ -187,7 +187,7 @@ if seccion == "🏠 Inicio":
     - **Agrupación**: `groupby()` con `agg()`
     """)
 
-# ============== EXPLORAR DATOS ==============
+
 elif seccion == "📂 Explorar Datos":
     st.title("Exploración del DataFrame")
     
@@ -214,7 +214,7 @@ elif seccion == "📂 Explorar Datos":
         st.dataframe(counts, use_container_width=True)
         st.caption(f"Total categorías únicas: {df_raw[col_sel].nunique()}")
 
-# ============== LIMPIEZA & TRANSFORMACIÓN ==============
+
 elif seccion == "🧹 Limpieza & Transformación":
     st.title("Limpieza y Transformación de Datos")
     
@@ -267,12 +267,12 @@ elif seccion == "🧹 Limpieza & Transformación":
     reporte = reporte.rename(columns={"count": "Total casos", "nunique": "Tipos de violencia"})
     st.dataframe(reporte, use_container_width=True)
 
-# ============== ANÁLISIS ESTADÍSTICO ==============
+
 elif seccion == "📈 Análisis Estadístico":
     st.title("Análisis Estadístico")
     
     df = df_raw.copy()
-    # Limpieza básica
+    
     for c in [COL_VIOLENCIA, COL_VICTIMA, COL_EDAD]:
         if c in df.columns:
             df[c] = df[c].fillna("Sin información")
@@ -294,7 +294,7 @@ elif seccion == "📈 Análisis Estadístico":
     evol = df.groupby(COL_ANO).size().reset_index(name="casos")
     st.dataframe(evol, use_container_width=True)
 
-# ============== VISUALIZACIONES ==============
+
 elif seccion == "📉 Visualizaciones":
     st.title("Visualizaciones interactivas")
     st.caption(
@@ -306,7 +306,7 @@ elif seccion == "📉 Visualizaciones":
     df_base = preparar_df_visual(df_raw)
     template = "plotly_dark"
 
-    # Opciones para filtros (desde el dataset completo)
+    
     lista_comunas = sorted(df_base[COL_COMUNA].dropna().astype(str).unique().tolist())
     anos_numeric = pd.to_numeric(df_base[COL_ANO], errors="coerce").dropna()
     y_min = int(anos_numeric.min()) if len(anos_numeric) else 2015
@@ -465,7 +465,7 @@ elif seccion == "📉 Visualizaciones":
             st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
 
     with col4:
-        # Si solo una comuna: barras por barrio; si no, ranking de comunas dentro del filtro
+        
         una_zona = len(comunas_sel) == 1
         if una_zona and COL_BARRIO in df.columns:
             st.subheader("Barrios en la zona seleccionada (top 12)")
@@ -527,6 +527,6 @@ elif seccion == "📉 Visualizaciones":
         fig6.update_traces(hovertemplate="%{y} / %{x}<br>Casos: %{z}<extra></extra>")
         st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
-# Footer
+
 st.markdown("---")
 st.markdown('<p class="footer-note">Proyecto Final - Ciencia de Datos con Python y Streamlit | Fuente: SIVIGILA - Alcaldía de Bucaramanga</p>', unsafe_allow_html=True)
